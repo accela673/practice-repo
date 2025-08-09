@@ -1,15 +1,76 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+/// Пользователь системы
+model User {
+  id       Int      @id @default(autoincrement())
+  email    String   @unique
+  password String
+  name     String?
+  role     Role     @default(USER)
+  bookings Booking[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+/// Переговорная комната
+model Room {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  capacity  Int
+  photoUrl  String?
+  equipment Json?     @default("{}")
+  bookings  Booking[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("rooms")
+}
+
+/// Бронирование комнаты
+model Booking {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId    Int
+
+  startTs   DateTime
+  endTs     DateTime
+
+  metadata  Json?    @default("{}")
+  status    BookingStatus @default(CONFIRMED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([roomId, startTs, endTs])
+  @@index([userId, startTs])
+  @@index([status])
+
+  @@map("bookings")
+}
+
+/// Роли пользователей
+enum Role {
+  USER
+  ADMIN
+}
+
+/// Статусы бронирования
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
 }
