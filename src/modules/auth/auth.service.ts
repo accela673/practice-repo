@@ -3,12 +3,15 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { randomInt } from 'crypto';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private mailService: EmailService, // Assuming EmailService is imported correctly
   ) {}
 
   async validateUser(email: string, pass: string) {
@@ -29,13 +32,22 @@ export class AuthService {
 
   async register(data: { email: string; password: string; name?: string }) {
     const hashedPassword = await bcrypt.hash(data.password, 10);
+    const activationCode = ('000000' + randomInt(0, 999999)).slice(-6);
+    const expires = new Date();
+    expires.setMinutes(expires.getMinutes() + 15); // код действителен 15 минут
+
     const user = await this.prisma.user.create({
       data: {
         email: data.email,
         password: hashedPassword,
         name: data.name,
+        confirmCode: activationCode,
+        confirmCodeDate: expires,
       },
     });
+
+    await this.mailService.sendActivationCode(user.email, activationCode);
+
     const { password, ...result } = user;
     return result;
   }

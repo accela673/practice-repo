@@ -16,6 +16,10 @@ model User {
   role     Role     @default(USER)
   bookings Booking[]
 
+  confirmCode String? @unique
+  isConfirmed Boolean @default(false)
+  confirmCodeDate DateTime? 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -43,7 +47,7 @@ model Booking {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  roomId    Int
+  roomId    Int 
 
   startTs   DateTime
   endTs     DateTime
