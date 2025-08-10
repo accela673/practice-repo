@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import { UsersModule } from './users/users.module';
-import { RoomsModule } from './rooms/rooms.module';
-import { BookingsModule } from './bookings/bookings.module';
-import { AuthModule } from './auth/auth.module';
-import { NotificationsModule } from './notifications/notifications.module';
+import { UsersModule } from './modules/users/users.module';
+import { RoomsModule } from './modules/rooms/rooms.module';
+import { BookingsModule } from './modules/bookings/bookings.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
@@ -19,8 +18,9 @@ import { NotificationsModule } from './notifications/notifications.module';
     BookingsModule,
     AuthModule,
     NotificationsModule,
+    PrismaModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}
