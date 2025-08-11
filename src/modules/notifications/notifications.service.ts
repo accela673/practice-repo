@@ -17,8 +17,8 @@ export class NotificationService {
   @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
     const now = new Date();
-    const notifyTime = new Date(now.getTime() + 1 * 60 * 1000); // через 1 минуту
-    const endNotifyTime = new Date(notifyTime.getTime() + 3 * 60 * 1000);
+    const notifyTime = new Date(now.getTime() + 30 * 60 * 1000); // через 30 минут
+    const endNotifyTime = new Date(notifyTime.getTime() + 3 * 60 * 1000); // +3 минуты на запас
 
     console.log('=== Cron job started ===');
     console.log('Current time:', now.toISOString());
