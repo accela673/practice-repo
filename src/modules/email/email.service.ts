@@ -28,4 +28,28 @@ export class EmailService {
     `,
     });
   }
+
+  async sendBookingNotification(to: string, roomName: string, startTs: Date) {
+    try {
+      const formattedDate = startTs.toLocaleString('ru-RU', {
+        dateStyle: 'full',
+        timeStyle: 'short',
+        timeZone: 'Europe/Moscow', // укажи свою таймзону
+      });
+
+      await this.transporter.sendMail({
+        from: `"Your Company" <${process.env.EMAIL}>`,
+        to: to,
+        subject: `Напоминание о бронировании комнаты "${roomName}"`,
+        html: `
+        <h1>Напоминание о бронировании</h1>
+        <p>Ваша бронь комнаты <strong>${roomName}</strong> начинается ${formattedDate}.</p>
+        <p>Пожалуйста, не забудьте подготовиться.</p>
+      `,
+      });
+    } catch (error) {
+      // Логируем ошибку, но не ломаем приложение
+      console.error('Ошибка отправки email уведомления:', error);
+    }
+  }
 }
