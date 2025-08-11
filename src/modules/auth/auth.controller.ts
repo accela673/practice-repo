@@ -13,7 +13,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from './guards/jwt-auth-guard';
-import { LoginDto, RegisterDto } from './dto/auth-dto';
+import { ConfirmDto, LoginDto, RegisterDto } from './dto/auth-dto';
 import { AuthService } from './auth.service';
 
 @ApiTags('auth') // Группа в Swagger
@@ -40,6 +40,12 @@ export class AuthController {
       throw new UnauthorizedException('Invalid credentials');
     }
     return this.authService.login(user);
+  }
+
+  @Post('confirm')
+  @ApiOperation({ summary: 'Подтверждение пользователя' })
+  async confirmUser(@Body() confirmDto: ConfirmDto) {
+    return this.authService.confirmUser(confirmDto.email, confirmDto.code);
   }
 
   @UseGuards(JwtAuthGuard)
