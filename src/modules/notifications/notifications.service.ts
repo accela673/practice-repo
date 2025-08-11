@@ -17,60 +17,66 @@ export class NotificationService {
   @Cron(CronExpression.EVERY_MINUTE)
   async handleCron() {
     const now = new Date();
-    this.logger.log(`Cron job running at: ${now.toISOString()}`);
+    const notifyTime = new Date(now.getTime() + 1 * 60 * 1000); // через 1 минуту
+    const endNotifyTime = new Date(notifyTime.getTime() + 3 * 60 * 1000);
 
-    const notifyWindowStart = new Date(now.getTime() + 29 * 60 * 1000); // 29 минут
-    const notifyWindowEnd = new Date(now.getTime() + 32 * 60 * 1000); // 32 минуты
-
-    this.logger.log(
-      `Looking for bookings starting between ${notifyWindowStart.toISOString()} and ${notifyWindowEnd.toISOString()}`,
+    console.log('=== Cron job started ===');
+    console.log('Current time:', now.toISOString());
+    console.log(
+      'Looking for bookings between',
+      notifyTime.toISOString(),
+      'and',
+      new Date(notifyTime.getTime() + 3 * 60 * 1000).toISOString(),
     );
 
-    try {
-      const bookings = await this.prisma.booking.findMany({
-        where: {
-          startTs: {
-            gte: notifyWindowStart,
-            lt: notifyWindowEnd,
-          },
-          status: 'CONFIRMED',
+    const bookings = await this.prisma.booking.findMany({
+      where: {
+        startTs: {
+          gte: notifyTime,
+          lt: new Date(notifyTime.getTime() + 3 * 60 * 1000),
         },
-        include: {
-          user: true,
-          room: true,
-        },
-      });
+        status: 'CONFIRMED',
+      },
+      include: {
+        user: true,
+        room: true,
+      },
+    });
 
-      this.logger.log(`Found ${bookings.length} bookings to notify`);
+    console.log(`Found ${bookings.length} bookings to notify`);
 
-      for (const booking of bookings) {
-        try {
-          await this.emailService.sendBookingNotification(
-            booking.user.email,
-            booking.room.name,
-            booking.startTs,
-          );
-          this.logger.log(
-            `Email sent to ${booking.user.email} for booking starting at ${booking.startTs.toISOString()}`,
-          );
-
-          this.notificationsGateway.sendBookingNotification({
-            userId: booking.userId,
-            roomName: booking.room.name,
-            startTs: booking.startTs,
-          });
-          this.logger.log(
-            `WebSocket notification sent to userId ${booking.userId}`,
-          );
-        } catch (notificationError) {
-          this.logger.error(
-            `Failed to send notifications for booking ID ${booking.id}`,
-            notificationError.stack,
-          );
-        }
-      }
-    } catch (error) {
-      this.logger.error('Failed to fetch bookings from database', error.stack);
+    if (bookings.length === 0) {
+      console.log('No bookings to notify this cycle');
     }
+
+    for (const booking of bookings) {
+      console.log(
+        'Processing booking:',
+        booking.id,
+        booking.startTs.toISOString(),
+      );
+
+      try {
+        await this.emailService.sendBookingNotification(
+          booking.user.email,
+          booking.room.name,
+          booking.startTs,
+        );
+        console.log(`Email sent to ${booking.user.email}`);
+
+        this.notificationsGateway.sendBookingNotification({
+          userId: booking.userId,
+          roomName: booking.room.name,
+          startTs: booking.startTs,
+        });
+        console.log(`WebSocket notification sent to userId ${booking.userId}`);
+      } catch (error) {
+        console.error(
+          `Error sending notification for booking ${booking.id}`,
+          error,
+        );
+      }
+    }
+    console.log('=== Cron job finished ===');
   }
 }

@@ -19,6 +19,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
   const PORT = process.env.PORT || 3000;
   await app.listen(PORT);
+  console.log('Server time:', new Date().toISOString());
   Logger.log(`🚀 App is running on: http://localhost:${PORT}`);
 }
 bootstrap();
