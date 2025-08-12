@@ -57,10 +57,15 @@ It ensures users are reminded **exactly 30 minutes before** their meetings and s
 
 src/
 ├── bookings/         # Логика и контроллеры бронирований
+
 ├── notifications/    # Сервисы уведомлений (email, WebSocket)
+
 ├── rooms/            # Управление комнатами
+
 ├── users/            # Управление пользователями
+
 ├── common/           # Общие DTO, утилиты и интерфейсы
+
 └── main.ts           # Точка входа в приложение
 
 
