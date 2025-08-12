@@ -55,19 +55,25 @@ It ensures users are reminded **exactly 30 minutes before** their meetings and s
 
 ## 📂 Project Structure
 
+
 src/
-  ├── bookings/         # Логика и контроллеры бронирований
 
-  ├── notifications/    # Сервисы уведомлений (email, WebSocket)
 
-  ├── rooms/            # Управление комнатами
+  ├── bookings/         # Booking logic and controllers
 
-  ├── users/            # Управление пользователями
+  ├── notifications/    # Notification services (email, WebSocket)
 
-  ├── common/           # Общие DTO, утилиты и интерфейсы
+  ├── rooms/            # Room management
 
-└── main.ts           # Точка входа в приложение
+  ├── users/            # User management
 
+  ├── email/            # Email sending with nodemailer
+
+  ├── auth/             # Authentication and authorization
+  
+└── app.module.ts     # Root application module
+
+└── main.ts             # Application entry point
 
 
 
@@ -87,3 +93,16 @@ $ npm run start:dev
 # Production
 $ npm run start:prod
 
+🧪 Testing
+
+# Запуск всех тестов
+$ npm run test
+
+# Запуск тестов в режиме наблюдения (автоматический перезапуск при изменениях)
+$ npm run test:watch
+
+# Запуск тестов с отчетом о покрытии кода
+$ npm run test:cov
+
+# Запуск e2e тестов (интеграционные тесты)
+$ npm run test:e2e
