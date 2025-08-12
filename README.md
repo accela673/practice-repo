@@ -95,14 +95,15 @@ $ npm run start:prod
 
 🧪 Testing
 
-# Запуск всех тестов
+# Launch all tests
 $ npm run test
 
-# Запуск тестов в режиме наблюдения (автоматический перезапуск при изменениях)
+# Launch all tests in watch mode
 $ npm run test:watch
 
-# Запуск тестов с отчетом о покрытии кода
+# Run tests with code coverage report
 $ npm run test:cov
 
-# Запуск e2e тестов (интеграционные тесты)
+# Run e2e tests (integration tests)
 $ npm run test:e2e
+
